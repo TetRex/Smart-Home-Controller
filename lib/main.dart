@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  const windowOptions = WindowOptions(minimumSize: Size(800, 500));
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool isLightOn = false;
+  bool isDoorOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +80,7 @@ class MainApp extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'ON/Off devices',
+                'ON/OFF Devices',
                 style: GoogleFonts.interTight(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
@@ -73,7 +91,7 @@ class MainApp extends StatelessWidget {
                 children: [
                   Container(
                     height: 200,
-                    width: screenWidth * 0.40,
+                    width: screenWidth * 0.45,
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(70, 255, 235, 59),
                       borderRadius: BorderRadius.circular(15),
@@ -109,7 +127,18 @@ class MainApp extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [Text('Status: ')]),
+                              Row(
+                                children: [
+                                  Text('Status: '),
+                                  Text(
+                                    isLightOn ? 'ON' : 'OFF',
+                                    style: GoogleFonts.interTight(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               SizedBox(height: 20),
                               Text('Tap to switch the light.'),
                               SizedBox(height: 30),
@@ -131,8 +160,17 @@ class MainApp extends StatelessWidget {
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('Turn OFF/ON'),
+                                    onPressed: () {
+                                      setState(() {
+                                        isLightOn = !isLightOn;
+                                      });
+                                    },
+                                    child: Text(
+                                      isLightOn ? 'Turn OFF' : 'Turn ON',
+                                      style: GoogleFonts.interTight(
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 15),
                                 ],
@@ -143,10 +181,10 @@ class MainApp extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 20),
+                  Spacer(),
                   Container(
                     height: 200,
-                    width: screenWidth * 0.40,
+                    width: screenWidth * 0.45,
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(70, 99, 99, 99),
                       borderRadius: BorderRadius.circular(15),
@@ -182,7 +220,18 @@ class MainApp extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [Text('Door: ')]),
+                              Row(
+                                children: [
+                                  Text('Door: '),
+                                  Text(
+                                    isDoorOpen ? 'UNLOCKED' : 'LOCKED',
+                                    style: GoogleFonts.interTight(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               SizedBox(height: 20),
                               Text('Tap to lock / unlock the door.'),
                               SizedBox(height: 30),
@@ -204,8 +253,17 @@ class MainApp extends StatelessWidget {
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('Unlock'),
+                                    onPressed: () {
+                                      setState(() {
+                                        isDoorOpen = !isDoorOpen;
+                                      });
+                                    },
+                                    child: Text(
+                                      isDoorOpen ? 'Lock' : 'Unlock',
+                                      style: GoogleFonts.interTight(
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 15),
                                 ],
