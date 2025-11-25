@@ -168,6 +168,7 @@ class _MainAppState extends State<MainApp> {
                                     child: Text(
                                       isLightOn ? 'Turn OFF' : 'Turn ON',
                                       style: GoogleFonts.interTight(
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.black,
                                       ),
                                     ),
@@ -262,6 +263,7 @@ class _MainAppState extends State<MainApp> {
                                       isDoorOpen ? 'Lock' : 'Unlock',
                                       style: GoogleFonts.interTight(
                                         color: Colors.black,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
