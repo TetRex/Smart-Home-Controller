@@ -10,15 +10,15 @@ class ActionLogProvider extends ChangeNotifier {
   double temperature = 10.0;
   int fanSpeed = 0;
 
-  // Power usage data
-  List<double> powerUsage = List.filled(100, 0.0);
+  // Power usage data - используйте пустой список вместо List.filled
+  List<double> powerUsage = [3, 1, 4, 2, 5, 3, 4, 2];
 
   void addLog(String action) {
     final now = DateTime.now();
     final timeString =
         '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
     actionLog.insert(0, '[$timeString] $action');
-    if (actionLog.length > 15) {
+    if (actionLog.length > 50) {
       actionLog.removeLast();
     }
     notifyListeners();
@@ -55,21 +55,21 @@ class ActionLogProvider extends ChangeNotifier {
   void toggleLight() {
     isLightOn = !isLightOn;
     addLog('Living Room Light turned ${isLightOn ? 'ON' : 'OFF'}');
-    updatePowerUsage(); // Add this line
+    updatePowerUsage();
     notifyListeners();
   }
 
   void toggleDoor() {
     isDoorOpen = !isDoorOpen;
     addLog('Front Door ${isDoorOpen ? 'UNLOCKED' : 'LOCKED'}');
-    updatePowerUsage(); // Add this line
+    updatePowerUsage();
     notifyListeners();
   }
 
   void setTemperature(double value) {
     temperature = value;
     addLog('Thermostat set to ${temperature.toStringAsFixed(1)}°C');
-    updatePowerUsage(); // Add this line
+    updatePowerUsage();
     notifyListeners();
   }
 
@@ -91,12 +91,11 @@ class ActionLogProvider extends ChangeNotifier {
         break;
     }
     addLog('Ceiling Fan set to $speedName');
-    updatePowerUsage(); // Add this line
+    updatePowerUsage();
     notifyListeners();
   }
 
   void updatePowerUsage() {
-    // Calculate power based on devices
     double power = 0.0;
 
     if (isLightOn) power += 0.5;
@@ -104,14 +103,15 @@ class ActionLogProvider extends ChangeNotifier {
     if (fanSpeed > 0) power += (fanSpeed * 0.3);
     power += (temperature / 10.0);
 
-    // Add to weekly data
-    powerUsage.removeAt(0);
+    // Добавляем новое значение и удаляем старое если > 10
+    if (powerUsage.length >= 10) {
+      powerUsage.removeAt(0);
+    }
     powerUsage.add(power);
     notifyListeners();
   }
 
   void updatePowerUsageRealTime() {
-    // Calculate current power
     double power = 0.0;
 
     if (isLightOn) power += 0.5;
@@ -119,11 +119,11 @@ class ActionLogProvider extends ChangeNotifier {
     if (fanSpeed > 0) power += (fanSpeed * 0.3);
     power += (temperature / 10.0);
 
-    // Add small variation for realistic simulation
-    power += (DateTime.now().microsecond % 100) / 500.0;
-
-    // Update array
-    powerUsage.removeAt(0);
+    // БЕЗ вариации - стабильное значение
+    // Удаляем старое значение, если список слишком большой
+    if (powerUsage.length >= 10) {
+      powerUsage.removeAt(0);
+    }
     powerUsage.add(power);
     notifyListeners();
   }

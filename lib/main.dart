@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_controller/action_log_provider.dart';
@@ -6,6 +7,7 @@ import 'package:smart_home_controller/appbar.dart';
 import 'package:smart_home_controller/camera_player.dart';
 import 'package:smart_home_controller/details.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +34,30 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Обновляем граф каждую секунду
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        final logProvider = Provider.of<ActionLogProvider>(
+          context,
+          listen: false,
+        );
+        logProvider.updatePowerUsageRealTime();
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ActionLogProvider>(
@@ -39,10 +65,7 @@ class _MainAppState extends State<MainApp> {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           home: Scaffold(
-            appBar: BarApp(
-              currentPage: 'home',
-              logProvider: logProvider, // Pass logProvider to BarApp
-            ),
+            appBar: BarApp(currentPage: 'home', logProvider: logProvider),
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
@@ -421,7 +444,7 @@ class _MainAppState extends State<MainApp> {
                                                       Colors.transparent,
                                                 ),
                                                 onPressed: () {
-                                                  Navigator.pushAndRemoveUntil(
+                                                  Navigator.push(
                                                     context,
                                                     PageRouteBuilder(
                                                       pageBuilder:
@@ -443,7 +466,6 @@ class _MainAppState extends State<MainApp> {
                                                       reverseTransitionDuration:
                                                           Duration.zero,
                                                     ),
-                                                    (route) => false,
                                                   );
                                                 },
                                                 child: Text(
@@ -562,7 +584,7 @@ class _MainAppState extends State<MainApp> {
                                                       Colors.transparent,
                                                 ),
                                                 onPressed: () {
-                                                  Navigator.pushAndRemoveUntil(
+                                                  Navigator.push(
                                                     context,
                                                     PageRouteBuilder(
                                                       pageBuilder:
@@ -585,7 +607,6 @@ class _MainAppState extends State<MainApp> {
                                                       reverseTransitionDuration:
                                                           Duration.zero,
                                                     ),
-                                                    (route) => false,
                                                   );
                                                 },
                                                 child: Text(
@@ -609,6 +630,120 @@ class _MainAppState extends State<MainApp> {
                       ),
                       SizedBox(height: 20),
                       Text(
+                        'Потребление электричества (Живой график)',
+                        style: GoogleFonts.interTight(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: 350, // Фиксированная высота
+                        width: double.infinity, // Полная ширина
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: SfCartesianChart(
+                            plotAreaBorderWidth: 0,
+                            primaryXAxis: NumericAxis(
+                              isVisible: true,
+                              title: AxisTitle(text: 'Время (сек)'),
+                              majorGridLines: const MajorGridLines(width: 0),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              title: AxisTitle(text: 'Мощность (кВт)'),
+                              labelFormat: '{value} kW',
+                              majorGridLines: const MajorGridLines(width: 0.5),
+                              axisLine: const AxisLine(width: 0),
+                              minimum: 0, // Минимум - 0 kW внизу
+                              maximum: 10, // Максимум - 10 kW вверху
+                            ),
+                            tooltipBehavior: TooltipBehavior(
+                              enable: true,
+                              format: 'point.x: point.y kW',
+                            ),
+                            series: <CartesianSeries>[
+                              SplineSeries<PowerData, int>(
+                                dataSource: List.generate(
+                                  logProvider.powerUsage.length,
+                                  (index) => PowerData(
+                                    index,
+                                    logProvider.powerUsage[index],
+                                  ),
+                                ),
+                                xValueMapper: (PowerData data, _) => data.time,
+                                yValueMapper: (PowerData data, _) => data.power,
+                                color: Colors.lightBlue,
+                                width: 3,
+                                splineType:
+                                    SplineType.monotonic, // Добавьте эту строку
+                                cardinalSplineTension:
+                                    0.8, // Добавьте эту строку
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.lightBlue),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Текущее потребление',
+                                  style: GoogleFonts.interTight(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                Text(
+                                  '${logProvider.powerUsage.last.toStringAsFixed(2)} кВт',
+                                  style: GoogleFonts.interTight(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                    color: Colors.lightBlue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Средняя за неделю',
+                                  style: GoogleFonts.interTight(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                Text(
+                                  '${(logProvider.powerUsage.reduce((a, b) => a + b) / logProvider.powerUsage.length).toStringAsFixed(2)} кВт',
+                                  style: GoogleFonts.interTight(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
                         'Cameras',
                         style: GoogleFonts.interTight(
                           fontWeight: FontWeight.bold,
@@ -628,4 +763,10 @@ class _MainAppState extends State<MainApp> {
       },
     );
   }
+}
+
+class PowerData {
+  PowerData(this.time, this.power);
+  final int time;
+  final double power;
 }
