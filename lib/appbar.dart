@@ -5,9 +5,10 @@ import 'package:smart_home_controller/statistics.dart';
 
 class BarApp extends StatelessWidget implements PreferredSizeWidget {
   final String currentPage;
+  final List<String> actionLog;
   final Color selectedColor = Colors.lightBlue;
   final Color unselectedColor = Colors.black;
-  const BarApp({super.key, required this.currentPage});
+  const BarApp({super.key, required this.currentPage, required this.actionLog});
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
@@ -51,7 +52,7 @@ class BarApp extends StatelessWidget implements PreferredSizeWidget {
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation1, animation2) =>
-                      const Statistics(),
+                      Statistics(actionLog: actionLog),
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ),
