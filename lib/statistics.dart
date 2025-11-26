@@ -113,11 +113,11 @@ class _StatisticsState extends State<Statistics> {
                             plotAreaBorderWidth: 0,
                             primaryXAxis: NumericAxis(
                               isVisible: true,
-                              title: AxisTitle(text: 'Время (сек)'),
+                              title: AxisTitle(text: 'Time (s)'),
                               majorGridLines: const MajorGridLines(width: 0),
                             ),
                             primaryYAxis: NumericAxis(
-                              title: AxisTitle(text: 'Мощность (кВт)'),
+                              title: AxisTitle(text: 'Power (kW)'),
                               labelFormat: '{value} kW',
                               majorGridLines: const MajorGridLines(width: 0.5),
                               axisLine: const AxisLine(width: 0),
