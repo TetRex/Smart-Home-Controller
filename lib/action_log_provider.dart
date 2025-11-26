@@ -55,21 +55,21 @@ class ActionLogProvider extends ChangeNotifier {
   void toggleLight() {
     isLightOn = !isLightOn;
     addLog('Living Room Light turned ${isLightOn ? 'ON' : 'OFF'}');
-    updatePowerUsage();
+    updatePowerUsageRealTime();
     notifyListeners();
   }
 
   void toggleDoor() {
     isDoorOpen = !isDoorOpen;
     addLog('Front Door ${isDoorOpen ? 'UNLOCKED' : 'LOCKED'}');
-    updatePowerUsage();
+    updatePowerUsageRealTime();
     notifyListeners();
   }
 
   void setTemperature(double value) {
     temperature = value;
     addLog('Thermostat set to ${temperature.toStringAsFixed(1)}°C');
-    updatePowerUsage();
+    updatePowerUsageRealTime();
     notifyListeners();
   }
 
@@ -91,7 +91,7 @@ class ActionLogProvider extends ChangeNotifier {
         break;
     }
     addLog('Ceiling Fan set to $speedName');
-    updatePowerUsage();
+    updatePowerUsageRealTime();
     notifyListeners();
   }
 
