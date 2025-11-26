@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_home_controller/appbar.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
 
-  const windowOptions = WindowOptions(minimumSize: Size(800, 500));
+  const windowOptions = WindowOptions(minimumSize: Size(800, 600));
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
@@ -25,6 +26,8 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   bool isLightOn = false;
   bool isDoorOpen = false;
+  double temperature = 10.0;
+  int fanSpeed = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -32,48 +35,7 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Text('Smart Home Controller'),
-              Spacer(),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  overlayColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                ),
-                child: Text(
-                  'Overview',
-                  style: GoogleFonts.interTight(
-                    fontSize: 15,
-                    color: Colors.lightBlue,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  overlayColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                ),
-                child: Text(
-                  'Statistic',
-                  style: GoogleFonts.interTight(
-                    color: Colors.black,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          centerTitle: false,
-        ),
+        appBar: BarApp(currentPage: 'home'),
         body: Container(
           margin: EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
@@ -86,7 +48,7 @@ class _MainAppState extends State<MainApp> {
                   fontSize: 25,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Container(
@@ -274,6 +236,192 @@ class _MainAppState extends State<MainApp> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Slider Controlled Devices',
+                style: GoogleFonts.interTight(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Container(
+                    width: screenWidth * 0.45,
+                    height: 220,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(95, 244, 67, 54),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.only(left: 8, top: 8),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.thermostat,
+                                size: 40,
+                                color: const Color.fromARGB(255, 0, 72, 130),
+                              ),
+                              SizedBox(width: 20),
+                              Text(
+                                'Termostat',
+                                style: GoogleFonts.interTight(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            margin: EdgeInsets.only(left: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text('Set point: '),
+                                    Text('${temperature.toStringAsFixed(1)}°C'),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Text('Use slider to change temperature.'),
+                                SizedBox(
+                                  width: screenWidth * 0.40,
+                                  child: Slider(
+                                    value: temperature,
+                                    min: 10.0,
+                                    max: 30.0,
+                                    onChanged: (double value) {
+                                      setState(() {
+                                        temperature = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(right: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          overlayColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                        ),
+                                        onPressed: () {},
+                                        child: Text(
+                                          'Details',
+                                          style: GoogleFonts.interTight(
+                                            color: Colors.blueAccent,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    width: screenWidth * 0.45,
+                    height: 220,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(52, 0, 195, 239),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.only(left: 8, top: 8),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.air,
+                                size: 40,
+                                color: const Color.fromARGB(255, 0, 72, 130),
+                              ),
+                              SizedBox(width: 20),
+                              Text(
+                                'Ceiling',
+                                style: GoogleFonts.interTight(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            margin: EdgeInsets.only(left: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text('Fan speed: '),
+                                    Text(fanSpeed.toString()),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Text('0 = OFF, 3 = MAX'),
+                                SizedBox(
+                                  width: screenWidth * 0.40,
+                                  child: Slider(
+                                    value: fanSpeed.toDouble(),
+                                    min: 0,
+                                    max: 3,
+                                    onChanged: (double value) {
+                                      setState(() {
+                                        fanSpeed = value.toInt();
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(right: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          overlayColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                        ),
+                                        onPressed: () {},
+                                        child: Text(
+                                          'Details',
+                                          style: GoogleFonts.interTight(
+                                            color: Colors.blueAccent,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
