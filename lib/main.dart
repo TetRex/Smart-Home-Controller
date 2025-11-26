@@ -535,6 +535,7 @@ class _MainAppState extends State<MainApp> {
                                               // Update UI without logging
                                               logProvider.fanSpeed = value
                                                   .toInt();
+                                              // ignore: invalid_use_of_protected_member
                                               logProvider.notifyListeners();
                                             },
                                             onChangeEnd: (double value) {

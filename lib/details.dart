@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_home_controller/action_log_provider.dart';
-import 'package:smart_home_controller/appbar.dart';
 import 'package:smart_home_controller/main.dart';
 
 class Details extends StatefulWidget {
@@ -79,10 +78,12 @@ class _DetailsState extends State<Details> {
                           )
                         : ListView.builder(
                             itemCount: logProvider
+                                // ignore: unnecessary_string_interpolations
                                 .getFilteredLog('${widget.type}')
                                 .length,
                             itemBuilder: (context, index) {
                               final filteredLog = logProvider.getFilteredLog(
+                                // ignore: unnecessary_string_interpolations
                                 '${widget.type}',
                               );
                               return Padding(
