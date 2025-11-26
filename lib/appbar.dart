@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_home_controller/action_log_provider.dart';
 import 'package:smart_home_controller/main.dart';
 import 'package:smart_home_controller/statistics.dart';
 
 class BarApp extends StatelessWidget implements PreferredSizeWidget {
   final String currentPage;
-  final List<String> actionLog;
+  final ActionLogProvider logProvider; // Add this
   final Color selectedColor = Colors.lightBlue;
   final Color unselectedColor = Colors.black;
-  const BarApp({super.key, required this.currentPage, required this.actionLog});
+
+  const BarApp({
+    super.key,
+    required this.currentPage,
+    required this.logProvider, // Add this
+  });
+
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
@@ -21,7 +28,7 @@ class BarApp extends StatelessWidget implements PreferredSizeWidget {
           Spacer(),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation1, animation2) =>
@@ -29,6 +36,7 @@ class BarApp extends StatelessWidget implements PreferredSizeWidget {
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ),
+                (route) => false,
               );
             },
             style: ElevatedButton.styleFrom(
@@ -48,14 +56,15 @@ class BarApp extends StatelessWidget implements PreferredSizeWidget {
           SizedBox(width: 8),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation1, animation2) =>
-                      Statistics(actionLog: actionLog),
+                      const Statistics(),
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ),
+                (route) => false,
               );
             },
             style: ElevatedButton.styleFrom(
