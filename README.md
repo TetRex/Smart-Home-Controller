@@ -18,7 +18,7 @@ A modern Flutter desktop application for controlling and monitoring smart home d
 
 ### Installation
 ```bash
-git clone <repository-url>
+git clone (https://github.com/TetRex/Smart-Home-Controller.git)
 cd smart_home_controller
 flutter pub get
 flutter run -d macos  # or linux/windows
